@@ -1,8 +1,20 @@
-#content{
-width:900px;
-margin:0 auto;
-text-align: center;
-  background-color: #5CA1D7;
+#content {
+  width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #5ca1d7;
+  --heading-font: Arial;
+}
 
-ol{width:400px;}
+.white-p {
+  color: white;
+}
+
+h1 {
+  font-family: Arial;
+}
+
+p {
+  font-family: Helvetica;
+  font-weight: bold;
 }
