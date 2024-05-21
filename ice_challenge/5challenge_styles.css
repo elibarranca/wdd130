@@ -1,0 +1,21 @@
+body {
+  max-witdth: 900px;
+  margin: 0 auto;
+}
+
+.top_image img {
+  width: 100%;
+  margin-bottom: -5px;
+}
+
+.icons {
+  background-color: #737373;
+  text-align: center;
+}
+
+.icons img {
+  width: 200px;
+  border-radius: 50%;
+  border: 10px solid #444444;
+  margin: 20px;
+}

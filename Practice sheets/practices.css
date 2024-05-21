@@ -1,0 +1,8 @@
+.BottomBox {
+    padding: 30px;
+    width:500px;
+    margin: 0 auto;
+    border: 5px solid blue;
+    box sizing: border-box;
+}
+max-witdth: 900px;
