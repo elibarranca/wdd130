@@ -1,61 +1,75 @@
 #content {
-    max-width: 1600px ;
-    margin: 0 auto;
-    text-align: center;
-    nav a
-    #hero-msg h1, #hero-msg h4
-    .button-box
-    main section
+  max-width: 1600px;
+  margin: 0 auto;
+  text-align: center;
 }
-<div>
-<section class="rapids-card">
-    <img class="card-img" src="images/rapids.jpg" alt="rafting boat">
-    <img class="icon" src="images/oars.png" alt="oars icon">
-    <h2>Rapids</h2>
-</section>
-<div id="background"></div> 
-<img class="mountains" src="images/mountains.jpg" alt="Misty mountains">
-<section class="msg">
-    <h2>More Than Just The Thrill</h2>
-    <p>Enjoy the breathtaking scenery. From valleys, meadows, canyons, and high peaks; it's way more than just the rapids. It's a great way to get away from it all and relax amongst all the beauty of the great outdoors. </p>
-    <a class='join' href="rivers.html">Join Us</a>
-</section>
-</div>
+
 #background {
-    height: 725px;
+  height: 725px;
+  background-color: rgb(240, 240, 248);
+  color: #353d2f;
 }
 body {
-    background-color: #fcfbfb; 
+  background-color: #f9f8f1;
+  color: #353d2f;
+  font-family: "Bahnschrift SemiBold Condensed", sans-serif;
 }
 header {
-    background-color:rgba(208, 220, 232, 0.7);
+  background-color: rgba(172, 194, 160, 0.7);
+  color: #353d2f;
+  text-align: left;
 }
 nav a:hover {
-    background-color: rgb(149, 153, 207);
-    text-decoration: none;
+  background-color: rgb(241, 240, 231);
+  text-decoration: none;
+  color: #515b3a;
 }
-.book, .join {
-    background-color: rgba(36, 17, 208, 0.39);
-    text-decoration: none;
+.book,
+.join {
+  background-color: rgba(169, 165, 115, 0.39);
+  text-decoration: none;
+  color: #353d2f;
 }
-.book:hover, .join:hover {
-    background-color: rgb(244, 240, 199);
-    text-decoration: none;
+.book:hover,
+.join:hover {
+  background-color: rgb(245, 237, 218);
+  text-decoration: none;
+  color: #353d2f;
 }
-#background {
-    background-color:  rgb(240, 240, 248);
-}
+
 .msg {
-    background-color:  rgb(244, 217, 85);
+  background-color: rgb(168, 200, 180);
+  color: #353d2f;
 }
 footer p a:hover {
-    background-color:  rgb(208, 220, 232, 0.7);
-    text-decoration: none;
-    font-size: : 1.8em;
-    text-decoration: underline;
+  background-color: rgba(232, 226, 208, 0.7);
+  text-decoration: none;
+  font-size: 1.2em;
+  text-decoration: underline;
+  color: #515b3a;
+}
+.logo {
+  width: 80px;
 }
 .icon {
-    width: 80px;
+  width: 80px;
 }
-   
-    
+#hero-img {
+  width: 100%;
+}
+
+nav a {
+  text-align: center;
+}
+
+#hero-msg h1,
+#hero-msg h4 {
+  text-align: center;
+}
+
+.button-box {
+  text-align: center;
+}
+main section {
+  text-align: center;
+}
