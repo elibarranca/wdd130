@@ -47,6 +47,7 @@ footer p a:hover {
   font-size: 1.2em;
   text-decoration: underline;
   color: #515b3a;
+  text-align: left;
 }
 .logo {
   width: 80px;
