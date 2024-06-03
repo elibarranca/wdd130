@@ -24,6 +24,8 @@ header {
   color: #353d2f;
   text-align: left;
   font-size: 22px;
+  display: grid;
+  grid-template-columns: 150px auto;
 }
 .home-title {
   margin-top: 10px;
@@ -33,6 +35,8 @@ header {
 }
 #logo_link {
   padding-top: 5px;
+  justify-self: center;
+  align-self: center;
 }
 .icon {
   width: 80px;
@@ -40,12 +44,38 @@ header {
 }
 #hero-img {
   width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
 }
+#hero {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    margin-top: -100px; 
+}
+#hero-box {
+    grid-column: 1/4;
+    grid-row: 1/3;
+    z-index: -1;
 
+}
+#hero-msg h4 {
+    color: white;
+#hero-msg {
+    grid-column: 2/3;
+    grid-row: 1/2;
+    margin-top: 100px;
+}
+}
+nav {
+    display: flex;
+    justify-content: space-around;
+}
 nav a {
   text-align: center;
   font-size: 22px;
   padding: 35px;
+  display: flex;
+  justify-content: space-around;
 }
 nav a:hover {
   background-color: rgb(241, 240, 231);
@@ -133,6 +163,10 @@ main section img {
 .card-img {
   border: 10px solid #d9c2a3;
 }
+.card-img, .mountains {
+    width: 100%;
+}
+
 footer, p, a:hover {
   background-color: rgba(232, 226, 208, 0.7);
   text-decoration: none;
