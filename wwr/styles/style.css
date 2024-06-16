@@ -7,7 +7,7 @@
 
 #background {
   height: 725px;
-  background-color: rgb(240, 240, 248);
+  background-color: rgb(165, 201, 165);
   color: #353d2f;
   grid-column: 1/11;
   grid-row: 4/9;
@@ -64,12 +64,17 @@ body {
   padding: 0;
 }
 header {
-  background-color: rgba(172, 194, 160, 0.7);
+  background-color: rgba(65, 85, 55, 0.7);
   color: #353d2f;
   text-align: left;
   font-size: 22px;
   display: grid;
   grid-template-columns: 150px auto;
+}
+a:link {
+  color: rgb(255, 255, 255);
+  background-color: rgb(47, 86, 51);
+  text-decoration: none;
 }
 .home-title {
   margin-top: 10px;
@@ -86,7 +91,6 @@ header {
   width: 80px;
   padding-top: 10px;
 }
-
 h1 {
   font-family: "Times New Roman", Times, serif;
 }
@@ -113,9 +117,9 @@ h2 {
 }
 .book,
 .join {
-  background-color: rgba(169, 165, 115, 0.39);
+  background-color: rgba(33, 79, 45, 0.997);
   text-decoration: none;
-  color: #353d2f;
+  color: #ffffff;
   font-size: 18px;
   margin-top: 50px;
   border-radius: 5px;
@@ -123,9 +127,9 @@ h2 {
 }
 .book:hover,
 .join:hover {
-  background-color: rgb(245, 237, 218);
+  background-color: rgb(47, 86, 51);
   text-decoration: none;
-  color: #353d2f;
+  color: #ffffff;
   font-size: 22px;
   margin-top: 50px;
 }
@@ -195,7 +199,7 @@ main section img {
 
 footer p,
 a:hover {
-  background-color: rgba(232, 226, 208, 0.7);
+  background-color: #73907ab3;
   text-decoration: none;
   font-size: 1.2em;
   text-decoration: underline;
@@ -219,7 +223,7 @@ footer {
   align-items: center;
 }
 footer .social img {
-  background-color: #e8e2d0b3;
+  background-color: #73907ab3;
   text-decoration: none;
   font-size: 1.2em;
   text-decoration: underline;
