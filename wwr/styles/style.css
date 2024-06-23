@@ -31,7 +31,6 @@
 #hero {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  margin-top: -100px;
 }
 #hero-box {
   grid-column: 1/4;
@@ -48,6 +47,7 @@ nav a {
   padding: 35px;
   display: flex;
   justify-content: space-around;
+  color: #ffffff;
 }
 nav a:hover {
   background-color: rgb(241, 240, 231);
@@ -114,6 +114,7 @@ h2 {
 .home-title {
   font-size: 2em;
   margin-top: 10px;
+  color: #ffffff;
 }
 .book,
 .join {
@@ -135,18 +136,18 @@ h2 {
 }
 .rivers-card {
   margin: 200px 0;
-  grid-column: 2/4;
-  grid-row: 2/3;
+  grid-column: 1/11;
+  grid-row: 1/2;
 }
 .camping-card {
   margin: 200px 0;
-  grid-column: 5/7;
-  grid-row: 2/3;
+  grid-column: 1/11;
+  grid-row: 3/4;
 }
 .rapids-card {
   margin: 200px 0;
-  grid-column: 8/10;
-  grid-row: 2/3;
+  grid-column: 1/11;
+  grid-row: 5/6;
 }
 .msg p {
   background-color: rgb(168, 200, 180);
@@ -265,6 +266,7 @@ main.home-grid {
   }
   .home-title {
     font-size: 25px;
+    color: #ffffff;
   }
   .rivers-card,
   .camping-card,
