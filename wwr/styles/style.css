@@ -167,7 +167,6 @@ h2 {
   grid-row: 6/7;
   box-shadow: 5px 5px 10px #6f7364;
 }
-
 .button-box {
   text-align: center;
   font-size: 22px;
@@ -197,7 +196,6 @@ main section img {
   grid-row: 5/8;
   box-shadow: 5px 5px 10px #6f7364;
 }
-
 footer p,
 a:hover {
   background-color: #73907ab3;
