@@ -325,3 +325,38 @@ main.web-grid {
   width: 100%;
   max-width: 100%;
 }
+#computer {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  margin-top: 0;
+}
+#computer-box {
+  grid-column: 1/4;
+  grid-row: 1/3;
+  z-index: -1;
+}
+#computer-msg,
+#computer-msg h1 {
+  text-align: center;
+  font-size: 60px;
+  line-height: 1.5em;
+  grid-column: 2/3;
+  grid-row: 1/2;
+  margin-top: 100px;
+  color: white;
+  background: #e3cee0;
+}
+#computer-msg h4 {
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.5em;
+  grid-column: 2/3;
+  grid-row: 1/2;
+  margin-top: 100px;
+  color: white;
+}
+#computer-img {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+}
