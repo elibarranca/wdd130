@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.1.2/sprintf.min.js"></script>
+    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/lodash.js"></script>
+    <title>Academic Profile</title>
+    <script type="text/javascript" src="/static/js/helpers/campusWidget.js"></script>
+    <link href="https://my.byui.edu/styles/main.css" rel="stylesheet" />
+    <link href="https://my.byui.edu/api/v2/branding/config/active/stylesheet/" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/simplebar@latest/dist/simplebar.css" />
+    <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+    <script>
+      var advEmail = null;
+      var AcademicProfile = (function() {
+        var showDetail = false;
+        var showSummary = true;
+        var clicking = false;
+        
+
+        var reRenderFields = function() {};
+
+        $(function() {
+          var widgetContainer = $("#widgetContainer");
+          var fixHeight = function() {
+            var newHeight = widgetContainer[0].scrollHeight;
+            newHeight = Math.min(Math.max(150, newHeight), 650);
+            //CampusUI.updateHeight(newHeight);
+          };
+          var advisorsContainer = widgetContainer.find(".advisorsContainer").clone();
+          var mailIcon = widgetContainer.find(".mailDiv1").clone();
+          
+          var userResultTemplate = widgetContainer.find(".userResult").clone();
+          var failureTemplate = widgetContainer.find(".failureResult").clone();
+          var loadingResult = widgetContainer.find(".loadingResult").clone();
+
+          var advisorDetailsTemplate = widgetContainer.find(".advisor").clone();
+          var noAdvisors = widgetContainer.find(".noAdvisors").clone();
+          // label block templates provided below are reused and adjusted for a number of elements
+          // changing code in their associated html elements may have unintended consequences on the js code's execution
+          var labelBlockTemplate = widgetContainer.find(".labelBlock").clone();
+          var labelBlockHeadingTemplate = labelBlockTemplate.clone();
+          labelBlockHeadingTemplate.addClass("h3").removeClass("text-md");
+          labelBlockHeadingTemplate.find(".labelBlock-title").addClass("text-md").removeClass("text-sm");
+          var labelBlockSplitContainerTemplate = widgetContainer.find(".labelBlockSplit").clone();
+          var labelBlockHeadingSplitContainerTemplate = labelBlockTemplate.clone();
+          labelBlockHeadingSplitContainerTemplate.find(".labelBlockLeft").addClass("h3").removeClass("text-md");
+          labelBlockHeadingSplitContainerTemplate.find(".labelBlock-title").addClass("text-md").removeClass("text-sm");
+          var labelBlockRightTemplate = widgetContainer.find(".labelBlockRight").clone();
+          var labelBlockHeadingRightTemplate = labelBlockTemplate.clone();
+          labelBlockHeadingRightTemplate.addClass("h3").removeClass("text-md");
+          labelBlockHeadingRightTemplate.find(".labelBlock-title").addClass("text-md").removeClass("text-sm");
+          var progressBarTemplate = widgetContainer.find(".percent_completed").clone();
+          var dummy = widgetContainer.find(".fake").clone();
+          var ctaContainer = widgetContainer.find(".cta-container").clone();
+          var ctaTemplate = widgetContainer.find(".cta-button").clone();
+          var mockMessage = widgetContainer.find(".mockMessage").clone();
+          var advisor_name = '';
+          var advisor_email = '';
+          widgetContainer.html(loadingResult);
+          fixHeight();
+
+          var mapping = [{
+              "inputKey": "extra_data.advisor_name",
+              "widgetLabel": "Advisor Name",
+              "omitIfEmpty": true,
+              "showInSummary": false,
+              "showInDetail": false,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "extra_data.advisor_email",
+              "widgetLabel": "Advisor Email",
+              "omitIfEmpty": true,
+              "showInSummary": false,
+              "showInDetail": false,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "gpa",
+              "widgetLabel": "GPA",
+              "omitIfEmpty": true,
+              "styling": "Half Width Standard",
+              "showInSummary": true,
+              "showInDetail": false,
+
+              "transformFunc": function(value, key, widgetLabel) {
+                if (value !== null && value !== undefined && value !== '') {
+                  if (_.isNumber(value)) {
+                    value = value.toString();
+                  }
+                  return _.toNumber(value.substring(0, 4));
+                } else {
+                  return null
+                }
+              }
+            },
+            {
+              "inputKey": "extra_data.student_classification",
+              "widgetLabel": "Class",
+              "omitIfEmpty": true,
+              "showInSummary": true,
+              "showInDetail": false,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "extra_data.student_track",
+              "widgetLabel": "Track",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "major",
+              "widgetLabel": "Major",
+              "omitIfEmpty": true,
+              "showInSummary": true,
+              "showInDetail": false,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "extra_data.emphasis1",
+              "widgetLabel": "Emphasis",
+              "omitIfEmpty": true,
+              "showInSummary": true,
+              "showInDetail": false,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "extra_data.minor1",
+              "widgetLabel": "Minor",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "extra_data.certificate",
+              "widgetLabel": "Certificate",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+              "styling": "Half Width Standard"
+            },
+            {
+              "inputKey": "campus",
+              "widgetLabel": "Campus",
+              "omitIfEmpty": true,
+              "styling": "Half Width Standard",
+              "showInDetail": false,
+              "showInSummary": true,
+              "transformFunc": function(value, key, widgetLabel) {
+                if (value != null && _.isObject(value) && 'name' in value) {
+                  return value.name
+                } else {
+                  return null
+                }
+              }
+            },
+            {
+              "inputKey": "department",
+              "widgetLabel": "Department",
+              "omitIfEmpty": true,
+              "styling": "Half Width Standard",
+              "showInDetail": false,
+              "showInSummary": true,
+              "transformFunc": function(value, key, widgetLabel) {
+                if (value != null && _.isObject(value) && 'name' in value) {
+                  return value.name
+                } else {
+                  return null
+                }
+              }
+            },
+            {
+              "inputKey": "schools",
+              "widgetLabel": "Schools",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+              "styling": "Half Width Standard",
+              "transformFunc": function(value, key, widgetLabel) {
+                if (value != null && _.isArray(value) && value.length > 0) {
+                  return _.map(value, function(school) {
+                    if ('name' in school) {
+                      return school.name
+                    } else {
+                      return null
+                    }
+                  });
+                } else {
+                  return null;
+                }
+              }
+            },
+            {
+              "inputKey": "course",
+              "widgetLabel": "Course",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+              "styling": "Half Width Standard",
+              "transformFunc": function(value, key, widgetLabel) {
+                if (value != null && _.isObject(value)) {
+                  var code = ('code' in value) ? value.code + ' - ' : '';
+                  if ('name' in value) {
+                    return code + value.name
+                  } else {
+                    return null
+                  }
+                } else {
+                  return null
+                }
+              }
+            },
+            {
+              "inputKey": "extra_data.completion",
+              "widgetLabel": "Progress",
+              "omitIfEmplty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+              "styling": "Progress Bar"
+            },
+
+            {
+              "inputKey": "extra_data.expected_graduation_date",
+              "widgetLabel": "Expected Graduation Date",
+              "omitIfEmpty": true,
+              "showInDetail": false,
+              "showInSummary": true,
+              "styling": "Full Width Standard"
+            }
+          ];
+
+          var cta_buttons = [{
+            "buttonText": "View Degree Audit",
+            "buttonLink": "https://my.byui.edu/ICS/Academics/Degree_Information.jnz"
+          }];
+          var buttonsToAdd = false;
+          if (cta_buttons.length > 0) {
+            buttonsToAdd = true;
+            ctaContainer.html(_.map(cta_buttons, function(button) {
+              var ctaButton = ctaTemplate.clone();
+              ctaButton.attr("href", button.buttonLink);
+              ctaButton.find("span").text(button.buttonText);
+              return ctaButton;
+            }));
+          };
+
+          var stylingTemplate = {
+            "Full Width Heading": labelBlockHeadingTemplate,
+            "Half Width Heading": labelBlockHeadingSplitContainerTemplate,
+            "Full Width Standard": labelBlockTemplate,
+            "Half Width Standard": labelBlockSplitContainerTemplate,
+            "Progress Bar": progressBarTemplate
+          };
+
+          var lastBlockWasLeft = false;
+          var leftBlock;
+
+          $.ajax({
+            method: "GET",
+            url: "/byui-pathify-api/v1/users/me",
+            success: function(academicProfileJson) {
+              reRenderFields = function() {
+
+                if (academicProfileJson != null) {
+                  var academicProfile;
+                  if (!(_.isObject(academicProfileJson))) {
+                    academicProfile = JSON.parse(academicProfileJson);
+                  } else {
+                    academicProfile = academicProfileJson;
+                  }
+
+                  var userHasNoData = _.every(academicProfile, function(v) {
+                    return _.isEmpty(v);
+                  });
+
+                  var advisorsList = _.get(academicProfile, 'extra_data.advisor_name', undefined);
+                  var advisorsEmail = _.get(academicProfile, 'extra_data.advisor_email', undefined);
+                  advMailTo = "mailto:" + advisorsEmail;
+                  advisorsContainer.find(".advisors-title").text('My Faculty Mentor');
+                  if (advisorsList == undefined) {
+                    advisorsList = "";
+                    advisorsContainer.find(".advisors-list").addClass("hidden-local");
+                    advisorsEmail = "You do not have an advisor assigned to you.";
+                    advisorsContainer.find(".advisors-email").removeClass("long-and-truncated");
+                    advisorsContainer.find(".advisors-email").addClass("email-wrap-text");
+                    advisorsContainer.find(".advisors-email").text(advisorsEmail);
+                    advMailTo = "mailto:" + advisorsEmail;
+                    advisorsContainer.find(".mailDiv1").addClass("hidden-local");
+                  } else {
+                    console.log('advisorsList', advisorsList);
+                    
+                    advisorsContainer.find(".advisors-list").text(advisorsList);
+                    advisorsContainer.find(".advisors-email").text(advisorsEmail);
+                    advisorsContainer.find(".mailToDyn").attr("href", advMailTo);
+                  }
+
+
+                  //document.getElementById("mailToDyn").setAttribute("href", advisorsEmail);
+
+                  if (!userHasNoData) {
+                    var userResult = userResultTemplate.clone();
+                    var userResultFields = userResult.find('.userResultFields');
+
+                    var totalWidth = widgetContainer.width();
+                    var itemsPerColumn = totalWidth < 500 ? 2 : 3;
+                    var finishedRowCalc = false;
+                    var totalRows = _.reduce(mapping, function(acc, label) {
+                      var fieldValue = undefined;
+                      var transformFunc = _.get(label, 'transformFunc', undefined);
+                      if (label.inputKey !== undefined && label.inputKey !== '' && label.inputKey !== null) {
+                        //fieldValue = _.get(academicProfile, label.inputKey, undefined)
+                        if (label.inputKey === 'extra_data.advisor_name') {
+                          fieldValue = '';
+                        }
+                      }
+                      if (_.isFunction(transformFunc)) {
+                        fieldValue = transformFunc(fieldValue, label.inputKey, label.widgetLabel);
+                      }
+                      if (finishedRowCalc) {
+                        console.log('acc1', acc);
+                        return acc;
+                      }
+                      if (label.styling.startsWith('Progress')) {
+                        finishedRowCalc = true;
+                        console.log('acc2', acc);
+                        return acc;
+                      } else if (fieldValue == null || fieldValue === '' && 'omitIfEmpty' in label && label.omitIfEmpty) {
+                        console.log('acc3', acc);
+                        return acc;
+                      } else if (label.styling.startsWith('Half')) {
+                        console.log('acc4', acc);
+                        return acc + (1 / itemsPerColumn);
+                      } else {
+                        console.log('acc5', acc);
+                        return acc + 1;
+                      }
+                    }, 0);
+                    totalRows = Math.ceil(totalRows);
+                    var row = 0;
+                    toggleFieldsFunc = function() {
+                      _.filter($(".labelBlock"), function(lb) {
+                        var lbelem = $(lb);
+                        if (lbelem.attr("field-row") < 3) {} else {}
+                      });
+                    };
+                    var countingCollapsibleFields = true;
+                    var finishedHiddenCalc;
+                    var hiddenFields = [];
+                    var shouldShowButton = totalRows > 21;
+                    if (shouldShowButton) {
+                      var showMoreButton = userResult.find("#showMoreButton");
+                      showMoreButton.off("click").on("click", function() {
+                        if (!clicking) {
+                          clicking = true;
+                          showDetail = !showDetail;
+                          showSummary = !showSummary;
+                          reRenderFields();
+                          clicking = false;
+                        }
+                      });
+                      if (showDetail) {
+                        showMoreButton.html($("<span/>", {
+                          text: "Show More"
+                        }));
+                      } else {
+                        showMoreButton.html($("<span/>", {
+                          text: "Show Less"
+                        }));
+                      }
+
+                    } else {
+                      userResult.find("#showMoreButton").remove();
+                    }
+                    userResultFields.html(_.map(_.filter(mapping, function(label) {
+                      var fieldValue = undefined;
+                      var transformFunc = _.get(label, 'transformFunc', undefined);
+                      var gpaRealValue = undefined;
+                      if (label.inputKey !== undefined && label.inputKey !== '' && label.inputKey !== null) {
+                        fieldValue = _.get(academicProfile, label.inputKey, undefined)
+
+                        console.log('Label and Value', label.inputKey, fieldValue);
+
+                        if (label.inputKey === 'gpa') {
+                          gpaRealValue = document.getElementById("gpah");
+                          window.gpaValue = fieldValue;
+                          //fieldValue = '654654';
+                        }
+                      }
+
+
+
+                      if (_.isFunction(transformFunc)) {
+                        fieldValue = transformFunc(fieldValue, label.inputKey, label.widgetLabel);
+                        if (label.inputKey === 'gpa') {
+                          fieldValue = '*.**2';
+                        }
+                      }
+                      if (finishedHiddenCalc) {}
+                      if (label.styling.startsWith('Progress')) {
+                        finishedHiddenCalc = true;
+                      } else if (fieldValue == null || fieldValue === '' && 'omitIfEmpty' in label && label.omitIfEmpty) {
+                        hiddenFields.push(label);
+                      }
+                      var showInSummary = true;
+                      if ('showInSummary' in label) {
+                        showInSummary = label.showInSummary;
+                      }
+                      label.showInSummary = showInSummary;
+                      var showInDetail = true;
+                      if ('showInDetail' in label) {
+                        showInDetail = label.showInDetail;
+                      }
+                      label.showInDetail = showInDetail;
+                      var shouldShow = (label.showInDetail && showDetail) || (label.showInSummary && showSummary);
+                      return shouldShow;
+                    }), function(label, index) {
+                      var isRight = false;
+                      /*
+                      if (label.styling == "Half Width Standard" && lastBlockWasLeft) {
+                        var labelBlock = labelBlockRightTemplate.clone();
+                        isRight = true;
+                      } else if (label.styling == "Half Width Heading" && lastBlockWasLeft) {
+                        var labelBlock = labelBlockHeadingRightTemplate.clone();
+                        isRight = true;
+                      } else {
+                      */
+                      var labelBlock = stylingTemplate[label.styling].clone();
+                      //}
+                      var transformFunc = _.get(label, 'transformFunc', undefined);
+                      var fieldValue = undefined;
+                      if (label.inputKey !== undefined && label.inputKey !== '' && label.inputKey !== null) {
+                        fieldValue = _.get(academicProfile, label.inputKey, undefined)
+                        if (label.inputKey === 'gpa') {
+                          //fieldValue = '*.***';
+                        }
+                      }
+                      if (_.isFunction(transformFunc)) {
+                        fieldValue = transformFunc(fieldValue, label.inputKey, label.widgetLabel);
+                        if (label.inputKey === 'gpa') {
+                          fieldValue = '*.***';
+                        }
+                      }
+
+                      if (label.inputKey === 'extra_data.advisor_email') {
+                        //fieldValue = '*.**9';
+                        //document.getElementById("mailToDyn").setAttribute("href", advisorsEmail);
+
+                      }
+
+
+                      if (label.showInDetail) {
+                        labelBlock.addClass("showInDetail");
+                        labelBlock.removeClass("hideInDetail");
+                      } else {
+                        labelBlock.addClass("hideInDetail");
+                        labelBlock.removeClass("showInDetail");
+                      }
+                      if (label.showInSummary) {
+                        labelBlock.addClass("showInSummary");
+                        labelBlock.removeClass("hideInSummary");
+                      } else {
+                        labelBlock.addClass("hideInSummary");
+                        labelBlock.removeClass("showInSummary");
+                      }
+                      if (fieldValue == null || fieldValue === '') {
+                        if ('omitIfEmpty' in label && label.omitIfEmpty) {
+                          return dummy;
+                        } else {
+                          fieldValue = 'Could not retrieve information';
+                        }
+                      } else {
+                        var currentRow = row;
+                        var layoutRow = currentRow;
+                        if (!countingCollapsibleFields) {
+
+                        } else if (label.styling.startsWith('Progress')) {
+                          countingCollapsibleFields = false;
+                        } else if (label.styling.startsWith('Half')) {
+                          layoutRow = Math.floor(currentRow);
+                          currentRow = currentRow + (1 / itemsPerColumn);
+                          if ((currentRow - Math.floor(currentRow)) > 0.9) {
+                            currentRow = Math.round(currentRow);
+                          }
+                          labelBlock.attr("field-row", layoutRow);
+                          labelBlock.addClass("collapsibleField");
+                        } else {
+                          currentRow = Math.floor(currentRow + 1);
+                          layoutRow = currentRow;
+                          labelBlock.attr("field-row", layoutRow);
+                          labelBlock.addClass("collapsibleField");
+                        }
+                        row = currentRow;
+                      }
+
+                      console.log("row calc", itemsPerColumn, layoutRow, currentRow, totalRows);
+
+                      if (label.styling == "Progress Bar") {
+                        if (fieldValue == 'Could not retrieve information') {
+                          fieldValue = '0';
+                          //labelBlock.find(".percent_completed-title").text("Progress data not found.");
+                        } else {
+                          // labelBlock.find(".percent_completed-title").text(fieldValue + "% Completed");
+                        }
+                        var percent = parseFloat(fieldValue);
+                        if (!isNaN(percent) && (percent <= 100 && percent >= 0)) {
+                          var count = 1;
+                          var x = function() {
+                            if (count > percent * 0.7) {
+                              count *= 1.03;
+                            } else {
+                              count *= 1.08;
+                            }
+                            labelBlock.find(".progress-gradient").css("width", count.toString() + "%");
+                            if (count < percent) {
+                              requestAnimationFrame(function() {
+                                setTimeout(x, 1);
+                              });
+                            }
+                          }
+                          setTimeout(x, 1);
+                        }
+                      } else {
+                        if (label.widgetLabel !== undefined && label.widgetLabel !== null) {
+                          if (label.widgetLabel == '') {
+                            labelBlock.find(".labelBlock-title").addClass("hidden");
+                          } else {
+                            labelBlock.find(".labelBlock-title").text(label.widgetLabel);
+                            labelBlock.addClass(label.widgetLabel.replace(/\s/g, ''));
+                            labelBlock.find(".labelBlock-title").addClass(label.widgetLabel.replace(/\s/g, '') + "-title");
+                          }
+                          labelBlock.find(".labelBlock-value").addClass(label.widgetLabel.replace(/\s/g, '') + "-value");
+                          if (_.isArray(fieldValue)) {
+                            var list = $("<ul class='list-unstyled'/>");
+                            _.forEach(fieldValue, function(value) {
+                              $("<li/>").text(value).appendTo(list);
+                            });
+                            labelBlock.find(".labelBlock-value").html(list);
+                          } else {
+                            labelBlock.find(".labelBlock-value").text(fieldValue);
+                          }
+                        }
+                      };
+                      if (label.styling == "Half Width Standard" && !isRight) {
+                        leftBlock = labelBlock;
+                        lastBlockWasLeft = true;
+                      } else if (label.styling == "Half Width Heading" && !isRight) {
+                        leftBlock = labelBlock;
+                        lastBlockWasLeft = true;
+                      } else {
+
+                        lastBlockWasLeft = false;
+                      }
+                      if (isRight) {
+                        leftBlock.append(labelBlock);
+                        console.log('dummy', dummy);
+                        return dummy
+
+                      }
+                      console.log('labelBlock', labelBlock);
+                      return labelBlock
+
+
+
+
+
+
+                    }));
+
+                    if (true) {
+                      var advisorsList = _.get(academicProfile, 'extra_data.advisor_name', undefined);
+                      console.log('advisorsList', advisorsList);
+                      //advisorsContainer.find(".advisors-title").text('My Advisor Name');
+                      //advisorsContainer.find(".advisors-list").text(advisorsList);
+                      if (advisorsList != null && _.isArray(advisorsList) && _.size(advisorsList) > 0) {
+                        var advisorListContainer = advisorsContainer.find(".advisors-list");
+                        advisorListContainer.html(
+                          _.map(advisorsList, function(advisorObj) {
+                            if (advisorObj.email != null && advisorObj.name != null) {
+                              var advisor = advisorDetailsTemplate.clone();
+
+                              advisor.find(".advisorName").text(advisor_name);
+                              if ('type' in advisorObj) {
+                                advisor.find(".advisorType").text(advisorObj.type);
+                              } else {
+                                advisor.find(".advisorType").addClass("hidden");
+                              }
+                              return advisor;
+                            }
+                          })
+                        );
+                        if (true) {
+                          //advisorsContainer.find(".advisors-title").text('Faculty Mentors');
+
+                        } else if (advisorsList.length > 0) {
+                          console.log('Inside advisor function');
+                          advisorsContainer.find(".advisors-title").text('My Advisor Name');
+                        } else {
+                          //advisorsContainer.html(noAdvisors);
+                        }
+                        console.log('userResult', userResult);
+                        userResult.append(advisorsContainer);
+                      } else {
+                        console.log('userResult', userResult);
+                        //advisorsContainer.html(noAdvisors);
+                        userResult.prepend(advisorsContainer);
+
+
+                        //let advisorNameRealValue = document.getElementById("advisorName");
+                        //let advisorNameValue = _.get(academicProfile, "extra_data.advisor_name", undefined);
+                        //console.log('advisorName', advisorNameValue);
+                        //console.log('element by ID', advisorNameRealValue);
+                        //advisorNameRealValue.innerHTML = advisorNameValue;
+
+
+
+                      }
+                    }
+
+                    if (buttonsToAdd) {
+                      userResult.append(ctaContainer);
+                    };
+
+                    var mockDataEnabled = false;
+                    if (mockDataEnabled) {
+                      mockMessage.removeClass('hidden');
+                      userResult.append(mockMessage);
+                    }
+                  } else {
+                    var failureResult = failureTemplate.clone();
+                    failureResult
+                      .find(".failureMessage")
+                      .text("Error: no information found for this user");
+                    if (buttonsToAdd) {
+                      failureResult.append(ctaContainer);
+                    };
+                    widgetContainer.html(failureResult);
+                    fixHeight();
+                  }
+
+                  widgetContainer.html(userResult);
+                  fixHeight();
+
+                } else {
+                  var failureResult = failureTemplate.clone();
+                  failureResult
+                    .find(".failureMessage")
+                    .text("Error: no information found for this user");
+                  if (buttonsToAdd) {
+                    failureResult.append(ctaContainer);
+                  };
+                  widgetContainer.html(failureResult);
+                  fixHeight();
+                }
+              };
+              reRenderFields();
+            },
+            error: function(err) {
+              var failureResult = failureTemplate.clone();
+              console.log(err);
+              failureResult.find(".failureMessage").text("Error: " + err.status + " " + err.statusText);
+              if (buttonsToAdd) {
+                failureResult.append(ctaContainer);
+              };
+              widgetContainer.html(failureResult);
+              fixHeight();
+            },
+
+          });
+        });
+
+
+        return {
+          showSummary: function(v) {
+            showSummary = v == true;
+            reRenderFields();
+          },
+          showDetail: function(v) {
+            showDetail = v == true;
+            reRenderFields;
+          },
+          reRender: reRenderFields
+        };
+
+
+
+
+      })();
+    </script>
+
+    <script>
+      // Change the type of input to password or text
+      
+      function Toggle() {
+        var threeDecGPA = 0.002;
+        let temp = document.getElementsByClassName("GPA-value");
+        let checkbox = document.getElementById("checkGPA");
+        let gpaRealValue = document.getElementById("gpah");
+        if (temp[0].innerHTML != '*.***') {
+          gpaRealValue.innerHTML = "*.***";
+        }
+        if (checkbox.checked === true) {
+          console.log('window.gpaValue: ', window.gpaValue);
+          threeDecGPA = Number(window.gpaValue);
+          console.log('threeDecGPA: ', threeDecGPA);
+          threeDecGPA = Number(threeDecGPA+0.0000001).toFixed(3); 
+          console.log('threeDecGPA: ', threeDecGPA);
+          temp[0].innerHTML = threeDecGPA;
+          //temp[0].innerHTML = window.gpaValue;
+        } else {
+          temp[0].innerHTML = "*.***";
+        }
+      }
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        new SimpleBar($('#container43R')[0]);
+      });
+    </script>
+    <style>
+      #container43R {
+        max-height: 312px;
+        overflow: auto;
+      }
+    </style>
+
+    <style>
+      .showMoreButtonContainer {
+        position: fixed;
+        right: 1em;
+        top: 1em;
+      }
+
+      @media only screen and (max-width: 500px) {
+        .thirdSize {
+          width: 45vw;
+        }
+      }
+
+      @media only screen and (min-width: 501px) {
+        .thirdSize {
+          width: 30vw;
+        }
+      }
+
+      .fixed-button {
+
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .progress-gradient {
+        background: linear-gradient(0.25turn,
+            var(--primary-d2),
+            30%,
+            var(--primary));
+        border-radius: 2px;
+        height: 100%;
+        width: 0%;
+        border: none;
+        float: left;
+      }
+
+      .progress-bar-full {
+        background: rgba(4, 10, 57, 0.2);
+        border-radius: 5px;
+        height: 5px;
+        width: 100%;
+        float: left;
+      }
+
+      .degree-percent-text {
+        font-size: 80%;
+      }
+
+      .italic {
+        font-style: italic;
+      }
+
+      #mailDiv1 {
+        height: 24px;
+        width: 24px;
+      }
+
+      #mailSvg {
+        display: none;
+      }
+
+      .long-and-truncated {
+        flex: 1;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hidden-local {
+        display: none;
+      }
+      .email-wrap-text {
+        text-wrap: wrap;
+      }
+
+      .advisors-list {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body class="bg-white non-touch">
+    <div id="container43R">
+      <div id="widgetContainer">
+        <div class="loadingResult">
+          <div class="loadingSpinner d-flex pa-16">
+            <svg focusable="false" class="loader size-24 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" white-space="pre">
+              <style>
+                @keyframes a0_t {
+                  0% {
+                    transform: translate(12px, 12px) rotate(0deg) translate(-10.5px, -10.5px);
+                  }
+
+                  to {
+                    transform: translate(12px, 12px) rotate(-359.975678deg) translate(-10.5px, -10.5px);
+                  }
+                }
+
+                @keyframes a1_t {
+
+                  0%,
+                  25.0219%,
+                  50.0236%,
+                  75.0253% {
+                    transform: translate(10.5px, 10.5px) rotate(0deg);
+                  }
+
+                  25.0016%,
+                  50.0033%,
+                  75.005% {
+                    transform: translate(10.5px, 10.5px) rotate(430deg);
+                    animation-timing-function: steps(1);
+                  }
+
+                  to {
+                    transform: translate(10.5px, 10.5px) rotate(429.883736deg);
+                  }
+                }
+
+                @keyframes a1_da {
+
+                  0%,
+                  25.022%,
+                  50.0236%,
+                  75.0253% {
+                    stroke-dasharray: 2px 65.56px;
+                    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+                  }
+
+                  33.1103%,
+                  58.112%,
+                  8.1087%,
+                  83.1137% {
+                    stroke-dasharray: 55px 65.56px;
+                  }
+
+                  10.8115%,
+                  35.8132%,
+                  60.8149%,
+                  85.8166% {
+                    stroke-dasharray: 55px 65.56px;
+                    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+                  }
+
+                  22.9745%,
+                  47.9762%,
+                  72.9779%,
+                  97.9796%,
+                  to {
+                    stroke-dasharray: 2px 65.56px;
+                  }
+
+                  25.0017%,
+                  50.0034%,
+                  75.0051% {
+                    stroke-dasharray: 2px 65.56px;
+                    animation-timing-function: steps(1);
+                  }
+                }
+
+                @keyframes a1_do {
+
+                  0%,
+                  25.022%,
+                  50.0236%,
+                  75.0253% {
+                    stroke-dashoffset: 0;
+                  }
+
+                  10.8115%,
+                  35.8132%,
+                  60.8149%,
+                  85.8166% {
+                    stroke-dashoffset: 0;
+                    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+                  }
+
+                  22.9745%,
+                  47.9762%,
+                  72.9779%,
+                  97.9796%,
+                  to {
+                    stroke-dashoffset: -53px;
+                  }
+
+                  25.0017%,
+                  50.0034%,
+                  75.0051% {
+                    stroke-dashoffset: -53px;
+                    animation-timing-function: steps(1);
+                  }
+                }
+              </style>
+              <g transform="translate(1.5 1.5)" style="animation: a0_t 4.933s linear infinite both" fill="none" stroke-width="3" stroke-linecap="round">
+                <ellipse rx="10.5" ry="10.5" stroke="#212653" opacity=".07" transform="translate(10.5 10.5)" />
+                <ellipse rx="10.5" ry="10.5" stroke-dasharray="2 65.56" transform="translate(10.5 10.5)" style="
+                    animation: a1_t 4.933s linear infinite both,
+                      a1_da 4.933s linear infinite both,
+                      a1_do 4.933s linear infinite both;
+                  " />
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="failureResult d-flex flex-column justify-content-center text-center">
+          <div class="text-quiet text-md px-16 pt-16 pb-8">
+            <div>
+              We are unable to show this information at this time.
+            </div>
+            <div>
+              Please try again later or contact your administrator.
+            </div>
+            <div class="failureMessage pt-8 text-muted"></div>
+          </div>
+        </div>
+
+
+        <div class="advisorsContainer text-md pb-0 px-12">
+          <div class="advisors-title px-4 text-muted text-sm"></div>
+          <div class="d-flex mt-0 py-16 bg-n2 rounded">
+            <div class="d-flex flex-row w-100 justify-content-between" style="height: 40px">
+              <div class="d-flex flex-column pl-16 long-and-truncated">
+                <div class="advisors-list text-bold long-and-truncated pr-16"></div>
+                <div class="advisors-email long-and-truncated pr-16"></div>
+              </div>
+              <div class="d-flex align-items-center pr-16" class="mailDiv1">
+                <svg id="#mailSvg" focusable="false" class="icon size-24 ml-8 mr-16 my-8 hidden-xs-down">
+                  <defs>
+                    <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="custom-husky-mail">\n
+                      <path style="fill: var(--color-base)" fill-rule="evenodd" d="M21.93 5.52L12 11.72 2.07 5.5A2 2 0 0 1 4 4h16c.94 0 1.72.65 1.93 1.52zM2 7.73L12 14l10-6.25V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7.73z" />
+                    </symbol>
+                  </defs>
+                </svg>
+                <div id="mailDiv1" class="mailDiv1">
+                  <a class="mailToDyn w-100 ng-star-inserted" href="advising@byui.edu" aria-label="Email (opens in a new window)">
+                    <svg viewBox="0 0 24 24" width="24" height="24" bg-primary>
+                      <use xlink:href="#custom-husky-mail" />
+                    </svg>
+
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="userResult d-flex flex-column pt-0 pb-16">
+
+          <input type="hidden" name="adEmail" id="adEmail">
+          <input type="hidden" name="gpah" id="gpah">
+          <div style="font-size: 0.6em; position: absolute; top: 121px; left: 45px" class="labelBlock-title text-sm text-muted pb-0 pt-0 ml-0 mt-0 mb-0 px-16">
+            <input id="checkGPA" type="checkbox" onclick="Toggle()">
+            <span>Show GPA</span>
+          </div>
+
+
+          <div class="userResultFields d-flex flex-wrap mt-0 py-16 pr-36"></div>
+          <div class="showMoreButtonContainer">
+            <button id="showMoreButton" class="btn md link"></button>
+          </div>
+        </div>
+
+
+        <a class="advisor d-flex text-md link-unstyled justify-content-between py-4 px-16" href="#" target="_blank">
+          <div class="d-flex flex-column flex-grow">
+            <span class="advisorName mr-8 text-bold"></span>
+            <!--<span class="advisorType mr-8 text-muted text-sm"></span>-->
+          </div>
+          <div class="d-flex flex-no-shrink justify-end align-items-center pr-8">
+            <svg class="icon size-16 text-quiet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M20 8V6l-8 5-8-5v2l8 5 8-5zm0-4c.6 0 1 .2 1.4.6.4.4.6.8.6 1.4v12c0 .6-.2 1-.6 1.4a2 2 0 0 1-1.4.6H4a2 2 0 0 1-1.4-.6A2 2 0 0 1 2 18V6c0-.6.2-1 .6-1.4A2 2 0 0 1 4 4h16z" />
+            </svg>
+          </div>
+        </a>
+        <div class="noAdvisors d-flex flex-column align-items-center justify-content-center text-center text-md px-16 py-8">
+          <p>No advisors to display.</p>
+          <p class="text-quiet">
+            If this is incorrect, please contact your administrator.
+          </p>
+        </div>
+        <div class="percent_completed text-md pb-12 px-16 w-100">
+          <div class="percent_completed-title degree-percent-text text-muted"></div>
+
+        </div>
+        <div class="labelBlock text-md pb-8 px-16 w-100">
+          <div class="labelBlock-title text-sm text-muted"></div>
+          <div class="labelBlock-value text-bold"></div>
+        </div>
+        <div class="labelBlockSplit d-flex thirdSize justify-content-between px-16 pb-8">
+          <div class="labelBlockLeft text-md">
+            <div class="labelBlock-title text-sm text-muted"></div>
+            <div class="labelBlock-value text-bold"></div>
+          </div>
+        </div>
+        <div class="labelBlockRight text-md text-right justify-content-end">
+          <div class="labelBlock-title text-sm text-muted"></div>
+          <div class="labelBlock-value text-bold"></div>
+        </div>
+
+        <div class="cta-container px-16 pb-16 pt-12  bg-white bt">
+          <a class="cta-button btn primary w-100 py-4 my-4" target="_blank">
+            <span class="mr-4"></span>
+          </a>
+        </div>
+      </div>
+    </div> 
+  </body>
+</html>

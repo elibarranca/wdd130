@@ -1,0 +1,8 @@
+favorite_color = input("Please enter your favorite color: ")
+print()
+print(f"Your favorite color is <3 {favorite_color} <3")
+print()
+favorite_shade = input("What kind of shade?")
+print()
+print(f"You especially like {favorite_shade} {favorite_color} <3<3<3")
+print()

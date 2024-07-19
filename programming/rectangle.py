@@ -1,0 +1,13 @@
+import math
+print("Please enter the following information:")
+print()
+lenght= float(input("What is the length of a side of the square?"))
+print(f"The area of the square is: {lenght*lenght}")
+print()
+l=int(input("What is the length of rectangle?"))
+width=float(input("What is the width of the rectangle?"))
+print(f"The area of the rectangle is: {l*width}")
+print()
+radius= float(input("What is the radius of the circle?"))
+print(f"The area of the circle is: {radius**2 * math.pi:.2f}")
+print()
