@@ -71,7 +71,6 @@
 }
 a:link {
   color: #ffffff;
-  background-color: #030207;
   text-decoration: none;
   font-family: "Montserrat", sans-serif;
 }
@@ -162,7 +161,25 @@ main section img {
 main.home-grid {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   height: auto;
+  gap: 20px;
+}
+.presentation-img {
+  grid-column: 2 / span 3; /* Specify the column span for the image */
+  grid-row: 3; /* Specify the row span for the image */
+  justify-self: center; /* Horizontally center the image within its grid area */
+  align-self: center; /* Vertically center the image within its grid area */
+  width: 100%; /* Ensure the image takes full width of its grid area */
+  max-width: 100%;
+}
+.education-img {
+  grid-column: 2 / span 3; /* Adjust column span if needed */
+  grid-row: 3; /* Position in the third row */
+  justify-self: center;
+  align-self: center;
+  width: 100%;
+  max-width: 100%;
 }
 .home-title {
   font-size: 25px;
@@ -197,17 +214,17 @@ a:hover {
   text-decoration: none;
   font-size: 1.2em;
   text-decoration: underline;
-  color: black;
+  color: white;
   text-align: left;
   padding: 25px 50px;
   margin-top: 200px;
   font-family: "Montserrat", sans-serif;
 }
 footer {
-  background-color: white;
+  background-color: black;
   font-size: 0.8em;
   text-decoration: none;
-  color: #030207;
+  color: white;
   text-align: left;
   padding: 25px 50px;
   display: flex;
