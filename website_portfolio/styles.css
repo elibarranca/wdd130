@@ -277,6 +277,7 @@ footer .social img {
   grid-row: 1/2;
   margin-top: 100px;
   color: white;
+  background: #e3cee0;
 }
 #code-msg h4 {
   text-align: center;
