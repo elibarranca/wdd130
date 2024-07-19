@@ -279,6 +279,15 @@ footer .social img {
   color: white;
   background: #e3cee0;
 }
+h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 22px;
+  line-height: 1.5em;
+  padding: 35px;
+  margin: 0;
+  grid-column: 2/3;
+  grid-row: 1/2;
+}
 #code-msg h4 {
   text-align: center;
   font-size: 22px;
@@ -295,8 +304,8 @@ footer .social img {
 }
 main.web-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
-  grid-template-rows: repeat (5, 1fr);
+  grid-template-columns: repeat (5, 1fr);
+  grid-template-rows: 1fr 1fr;
   height: auto;
   gap: 20px;
 }
