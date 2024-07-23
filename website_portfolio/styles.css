@@ -260,8 +260,7 @@ footer .social img {
   margin-top: 15px;
 }
 
-@media screen {
-  max-width: 900px;
+@media only screen and (max-width: 900px) {
   #content {
     max-width: 100%;
     margin: 0;
